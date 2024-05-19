@@ -1,10 +1,11 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import SectionHeading from "./section-heading";
 import { skillsData } from "@/lib/data";
 import { useSectionInView } from "@/lib/hooks";
 import { motion } from "framer-motion";
+import axios from "axios";
 
 const fadeInAnimationVariants = {
   initial: {
@@ -23,6 +24,30 @@ const fadeInAnimationVariants = {
 export default function Skills() {
   const { ref } = useSectionInView("Skills");
 
+
+  const [skills, setSkills] = useState([]);
+
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        axios.get("http://localhost:8080/skills")
+          .then((response) => {
+            // console.log(response)
+            const { data: { skills } } = response;
+            setSkills(skills);
+            // setHeaderText(about_me);
+          }).catch((error) => {
+            console.log(error);
+          })
+      }
+      catch (error) {
+        alert(error);
+      }
+    };
+    getData();
+    
+  }, [])
+
   return (
     <section
       id="skills"
@@ -31,7 +56,7 @@ export default function Skills() {
     >
       <SectionHeading>My skills</SectionHeading>
       <ul className="flex flex-wrap justify-center gap-2 text-lg text-gray-800">
-        {skillsData.map((skill, index) => (
+        {skills && skills.length > 0 && skills.map((skill, index) => (
           <motion.li
             className="bg-white borderBlack rounded-xl px-5 py-3 dark:bg-white/10 dark:text-white/80"
             key={index}

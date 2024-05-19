@@ -1,12 +1,38 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import SectionHeading from "./section-heading";
 import { motion } from "framer-motion";
 import { useSectionInView } from "@/lib/hooks";
+import axios from "axios";
 
 export default function About() {
   const { ref } = useSectionInView("About");
+
+  const [headerText, setHeaderText] = useState("");
+  
+
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        axios.get("http://localhost:8080/home")
+          .then((response) => {
+            console.log(response)
+            const { data } = response;
+            const { about_me } = data[0];
+
+            setHeaderText(about_me);
+          }).catch((error) => {
+            console.log(error);
+          })
+      }
+      catch (error) {
+        alert(error);
+      }
+    };
+    getData();
+    
+  }, [])
 
   return (
     <motion.section
@@ -19,21 +45,7 @@ export default function About() {
     >
       <SectionHeading>About me</SectionHeading>
       <p className="mb-3">
-        After graduating with a degree in{" "}
-        <span className="font-medium">Accounting</span>, I decided to pursue my
-        passion for programming. I enrolled in a coding bootcamp and learned{" "}
-        <span className="font-medium">full-stack web development</span>.{" "}
-        <span className="italic">My favorite part of programming</span> is the
-        problem-solving aspect. I <span className="underline">love</span> the
-        feeling of finally figuring out a solution to a problem. My core stack
-        is{" "}
-        <span className="font-medium">
-          React, Next.js, Node.js, and MongoDB
-        </span>
-        . I am also familiar with TypeScript and Prisma. I am always looking to
-        learn new technologies. I am currently looking for a{" "}
-        <span className="font-medium">full-time position</span> as a software
-        developer.
+        {headerText}
       </p>
 
       <p>

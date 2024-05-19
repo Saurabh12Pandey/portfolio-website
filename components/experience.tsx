@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import SectionHeading from "./section-heading";
 import {
   VerticalTimeline,
@@ -10,16 +10,60 @@ import "react-vertical-timeline-component/style.min.css";
 import { experiencesData } from "@/lib/data";
 import { useSectionInView } from "@/lib/hooks";
 import { useTheme } from "@/context/theme-context";
-
+import axios from "axios";
+import { CgWorkAlt } from "react-icons/cg";
+import { FaReact } from "react-icons/fa";
+import { LuGraduationCap } from "react-icons/lu";
 export default function Experience() {
   const { ref } = useSectionInView("Experience");
   const { theme } = useTheme();
+
+
+  const [experience, setExperience] = useState([]);
+
+
+
+
+  console.log(experiencesData);
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        axios.get("http://localhost:8080/experience")
+          .then((response) => {
+            console.log(response)
+            let experienceList = [];
+            const { data } = response;
+            data.map((exp, index) => {
+              const { experienceDescription, experienceDuration, experienceTitle } = exp;
+              experienceList.push({
+                icon: index === 0 ? React.createElement(LuGraduationCap) : index === 1 ? React.createElement(CgWorkAlt) : React.createElement(FaReact),
+                title: experienceTitle,
+                location: "Remote",
+                description: experienceDescription,
+                date: experienceDuration,
+              });
+            });
+            // setSkills(skills);
+            // setHeaderText(about_me);
+            setExperience(experienceList);
+          }).catch((error) => {
+            console.log(error);
+          })
+      }
+      catch (error) {
+        alert(error);
+      }
+    };
+    getData();
+
+  }, [])
+
 
   return (
     <section id="experience" ref={ref} className="scroll-mt-28 mb-28 sm:mb-40">
       <SectionHeading>My experience</SectionHeading>
       <VerticalTimeline lineColor="">
-        {experiencesData.map((item, index) => (
+        {experience && experience.length > 0 && experience.map((item, index) => (
           <React.Fragment key={index}>
             <VerticalTimelineElement
               contentStyle={{
